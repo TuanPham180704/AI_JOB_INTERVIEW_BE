@@ -9,6 +9,7 @@ import { ResponseModule } from './response/response.module';
 import { ReportModule } from './report/report.module';
 import { BlogModule } from './blog/blog.module';
 import { AdminModule } from './admin/admin.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AdminModule } from './admin/admin.module';
     ReportModule,
     BlogModule,
     AdminModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
