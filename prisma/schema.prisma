@@ -13,3 +13,67 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id         String      @id @default(uuid())
+  email      String      @unique
+  password   String
+  role       String      @default("User")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  profile    Profile?
+  interviews Interview[]
+  blogs      Blog[]
+}
+
+model Profile {
+  id     String @id @default(uuid())
+  name   String
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Interview {
+  id        String     @id @default(uuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  responses Response[]
+  report    Report?
+}
+
+model Question {
+  id        String     @id @default(uuid())
+  content   String
+  category  String
+  responses Response[]
+}
+
+model Response {
+  id          String    @id @default(uuid())
+  interviewId String
+  interview   Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  questionId  String
+  question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answer      String
+  score       Int?
+  createdAt   DateTime  @default(now())
+}
+
+model Report {
+  id          String    @id @default(uuid())
+  interviewId String    @unique
+  interview   Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  summary     String
+  suggestions String?
+  createdAt   DateTime  @default(now())
+}
+
+model Blog {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
