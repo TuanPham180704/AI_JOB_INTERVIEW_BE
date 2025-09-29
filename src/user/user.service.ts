@@ -42,10 +42,14 @@ export class UserService {
     return this.prisma.user.delete({ where: { id } });
   }
   async getUserId(userId: string) {
-    return this.prisma.user.findUnique({ where: userId });
+    return this.prisma.user.findUnique({
+      where: { id: userId },
+    });
   }
   async updateProfile(userId: string, name: string) {
-    const profile = await this.prisma.user.findUnique({ where: { userId } });
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    const profile = await this.prisma.profile.findUnique({ where: { userId } });
     if (profile) {
       return this.prisma.profile.update({
         where: { userId },
