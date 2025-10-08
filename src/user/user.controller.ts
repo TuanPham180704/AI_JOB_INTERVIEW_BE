@@ -1,51 +1,45 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('users')
 export class UserController {
-  constructor(private usersService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Post()
-  createUser(@Body() body: { email: string; password: string; role?: string }) {
-    return this.usersService.createUser(body.email, body.password, body.role);
+  create(@Body() dto: CreateUserDto) {
+    return this.userService.createUser(dto);
   }
-
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Req() req) {
-    return this.usersService.getUserId(req.user.userId);
-  }
-
-  @Get(':id')
-  getUserById(@Param('id') id: string) {
-    return this.usersService.findByid(id);
-  }
-
   @Get()
-  getAllUsers() {
-    return this.usersService.findAll();
+  findAll() {
+    return this.userService.findAll();
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  findById(@Param('id') id: string) {
+    return this.userService.findById(id);
   }
 
-  @Put(':id')
-  updateUser(
-    @Param('id') id: string,
-    @Body() body: { email?: string; password?: string; role?: string },
-  ) {
-    return this.usersService.updateUser(id, body);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return this.userService.updateUser(id, dto);
   }
-
-  @Put('profile/:userId')
-  updateProfile(
-    @Param('userId') userId: string,
-    @Body() body: { name: string },
-  ) {
-    return this.usersService.updateProfile(userId, body.name);
-  }
-
 
   @Delete(':id')
-  deleteUser(@Param('id') id: string) {
-    return this.usersService.deleteUser(id);
+  delete(@Param('id') id: string) {
+    return this.userService.deleteUser(id);
   }
 }
